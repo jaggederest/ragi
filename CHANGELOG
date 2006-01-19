@@ -1,0 +1,16 @@
+== 1.0.2 - 19-Jan-2005
+- Created SVN repository for the code, docs and examples
+- Added "RAGI Overview.html" a critical file that was missing from the gem
+
+== 1.0.0 - 17-Dec-2005
+- Moved RAGI from SourceForge to RubyForge
+- Updated method names to be more consistent with Ruby and RoR naming conventions
+- Packaged RAGI as a GEM
+- Added instructions for launching RAGI inside of a Rails application
+- Improved ability to map URI to call handlers
+- Updated samples and docs as per above changes
+- Added a README file for getting started quickly
+- If you were using RAGI 0.0.1 from sourceforge, you will need to update your app since the API for this release is not backwards-compatible
+
+== 0.0.1 - 12-Sep-2005
+- Initial release

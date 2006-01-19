@@ -1,0 +1,9 @@
+These are the sounds needed for the simon sample app.
+
+You'll need to copy these sounds directly to the default sounds directory on your Asterisk server (e.g. var/lib/asterisk/sounds/) in order to use the simon game app.
+
+In the simon call handler, it plays these sounds using the playSound command, e.g.:
+play_sound("simon-welcome")
+
+This command tells the asterisk server to play the sound "simon-welcome.gsm" from the asterisk server's default sound location (e.g. var/lib/asterisk/sounds/simon-welcome.gsm)
+

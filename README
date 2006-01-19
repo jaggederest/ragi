@@ -1,0 +1,114 @@
+************************************************ 
+**   RAGI - Ruby Asterisk Gateway Interface   **
+************************************************
+
+Ruby Asterisk Gateway Interface (RAGI) is a useful open-source framework 
+for bridging the  Ruby on Rails web application server environment and 
+Asterisk, the open-source PBX. 
+
+RAGI eases the development of interactive automated telephony applications 
+such as IVR, call routing, automated call center, and extended IP-PBX 
+functionality by leveraging the productivity of the Ruby on Rails framework.  
+RAGI simplifies the process of creating rich telephony and web apps with a 
+single common web application framework, object model and database backend.  
+
+*************************
+**   RAGI License      **
+*************************
+
+RAGI is available under the BSD license.
+
+RAGI is sponsored by SnapVine (www.snapvine.com).  
+Please email support@snapvine.com if you have 
+questions about RAGI.
+
+********************************** 
+**   Quick Start Instructions   **
+**********************************
+
+Installing RAGI for Ruby users
+------------------------------
+
+1. Copy RAGI into the library path for ruby $(lib)/ragi/call*.rb
+
+2. Edit your Asterisk extensions.conf to send call control to your RAGI process.  
+For example, the following would send all calls routed to extension "102" to your
+Simon Game, presuming your RAGI server is running on a machine with 
+IP address 192.168.2.202
+
+exten => 102,1,Answer()
+exten => 102,2,deadagi(agi://192.168.2.202)
+exten => 102,3,Hangup
+
+3. To support the Simon Game sample, copy the sound files into your Asterisk
+server's default sound directory.
+
+4. The file "start_ragi.rb" is an example of running RAGI with the Simon Game
+call handler.  To run, type the following from the command prompt:
+
+ruby ragi\start_ragi.rb
+
+If you wanted to send calls to a different call handler, you can pass it as a parameter
+to the CallServer.new.  For example:
+
+RAGI::CallServer.new( :DefaultHandler => MyNewHandler::CallHandler )
+
+NOTE:  Currently unless you are using Rails, there is no way to specify multiple
+handlers and switch based on URI (see below for how RAGI does this with Rails).
+
+
+Installing RAGI for Ruby on Rails 
+---------------------------------
+1. Create a directory "ragi" inside the "lib" directory of your Rails application
+
+2. Copy all of RAGI's rb files into the ragi folder.
+
+3. Create a new directory in your rails directory called "handlers" under your "app" directory. 
+Put your call handlers in this directory.  To run the Simon Game example app, place "simon_handler.rb"
+in this directory.
+
+As you may already know, a "controller" is a Rails concept and is used to provide the logic for your web app.
+Controllers use "views" to render web pages.  In RAGI, a phone call interaction is programmed using a handler.
+
+4. Configure your Rails application to boot up a RAGI server on launch as a separate thread.  Add the 
+following to the end of your Rails environment.rb file:
+
+Dependencies.mechanism = :require
+
+# Simple server that spawns a new thread for the server
+class SimpleThreadServer < WEBrick::SimpleServer
+  def SimpleThreadServer.start(&block)
+    Thread.new do block.call
+    end  
+  end
+end
+
+require 'ragi/call_server'
+
+RAGI::CallServer.new(:ServerType => SimpleThreadServer )
+
+
+5. Edit your Asterisk extensions.conf to send call control to your RAGI process.  
+For example, the following would send all calls routed to extension "102" to your
+Simon Game, presuming your RAGI server is running on a machine with 
+IP address 192.168.2.202
+
+exten => 102,1,Answer()
+exten => 102,2,deadagi(agi://192.168.2.202/simon/dialup)
+exten => 102,3,Hangup
+
+NOTE:  With RAGI, you can have multiple call handlers implemented in your application,
+and you route these based on a URI.  In this example, any call sent to extension 102
+will be routed to the a handler called "simon_handler" in the handlers directory, and 
+the method "dialup" will be called when the call goes through.
+
+If you wanted additional call handlers, you would put them in the handlers directory
+and config your extensions.conf to route them as needed.
+
+6. To support the Simon Game sample, copy the sound files into your Asterisk
+server's default sound directory.
+
+7. Start up your Rails app and your Asterisk server.
+
+8. Call extension 102 and to play the Simon Game.
+
