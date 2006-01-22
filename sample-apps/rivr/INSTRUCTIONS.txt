@@ -1,0 +1,13 @@
+1) Dial the access number for the service
+
+a) Listen to the prompt. It will tell you to enter a phone number. You must enter the area code as well, so that the full number is   a ten digit number.
+
+b) You will be asked to enter the mobile number again. Do so.
+
+c) You will be asked, depending on whether you entered a number with a valid area code, how many units you want to load.
+
+d) Next, you will be asked for your debit card account number. Enter your debit card number EXACTLY as shown on the card. Then press the '#' key.
+
+e) You will be asked to enter a pin number. Enter your 4 digit pin number.
+
+7) Wait until you hear a voice. The system will thank you for using the service and then hang up. You will receive a text message with your recharge code.

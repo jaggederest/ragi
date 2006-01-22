@@ -1,0 +1,124 @@
+-- MySQL dump 10.9
+--
+-- Host: localhost    Database: rivr
+-- ------------------------------------------------------
+-- Server version	4.0.21 Complete MySQL by Server Logistics
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Table structure for table `accounts`
+--
+
+DROP TABLE IF EXISTS `accounts`;
+CREATE TABLE `accounts` (
+  `id` int(11) NOT NULL auto_increment,
+  `number` varchar(50) NOT NULL default '',
+  `pin` varchar(50) NOT NULL default '',
+  `balance` int(11) NOT NULL default '0',
+  `created_on` timestamp(14) NOT NULL,
+  `updated_on` timestamp(14) NOT NULL default '00000000000000',
+  `last_login` datetime default NULL,
+  `logins` int(11) NOT NULL default '0',
+  `attempts_today` int(11) NOT NULL default '0',
+  `attempts_total` int(11) NOT NULL default '0',
+  PRIMARY KEY  (`id`)
+) TYPE=MyISAM;
+
+--
+-- Dumping data for table `accounts`
+--
+
+
+/*!40000 ALTER TABLE `accounts` DISABLE KEYS */;
+LOCK TABLES `accounts` WRITE;
+INSERT INTO `accounts` VALUES (2,'1234567890','1234',690000,20051211010439,20051211234608,'2005-12-11 23:46:08',0,0,0);
+UNLOCK TABLES;
+/*!40000 ALTER TABLE `accounts` ENABLE KEYS */;
+
+--
+-- Table structure for table `coupons`
+--
+
+DROP TABLE IF EXISTS `coupons`;
+CREATE TABLE `coupons` (
+  `id` int(11) NOT NULL auto_increment,
+  `voucher` varchar(50) NOT NULL default '',
+  `price` int(11) NOT NULL default '0',
+  `product_id` int(11) NOT NULL default '0',
+  `account_id` int(11) default NULL,
+  `used` char(1) NOT NULL default 'N',
+  `created_on` timestamp(14) NOT NULL,
+  `updated_on` timestamp(14) NOT NULL default '00000000000000',
+  `used_on` datetime default NULL,
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY `vouchers` (`voucher`),
+  KEY `product` (`product_id`),
+  KEY `accounts` (`account_id`)
+) TYPE=MyISAM;
+
+--
+-- Dumping data for table `coupons`
+--
+
+
+/*!40000 ALTER TABLE `coupons` DISABLE KEYS */;
+LOCK TABLES `coupons` WRITE;
+INSERT INTO `coupons` VALUES (2,'9922774466551100',75000,1,2,'Y',20051211000611,20051211012743,'2005-12-11 01:27:43'),(3,'8822774466551100',75000,1,2,'Y',20051210212349,20051211014446,'2005-12-11 01:44:46'),(4,'7722774465551100',75000,1,2,'Y',20051210212349,20051211014752,'2005-12-11 01:47:52'),(5,'6632774465551100',75000,1,NULL,'N',20051211225047,20051211162525,NULL),(6,'12341234123412',128000,2,2,'Y',20051211205457,20051211202203,'2005-12-11 01:47:52');
+UNLOCK TABLES;
+/*!40000 ALTER TABLE `coupons` ENABLE KEYS */;
+
+--
+-- Table structure for table `issuers`
+--
+
+DROP TABLE IF EXISTS `issuers`;
+CREATE TABLE `issuers` (
+  `id` int(11) NOT NULL auto_increment,
+  `name` varchar(50) NOT NULL default '',
+  PRIMARY KEY  (`id`)
+) TYPE=MyISAM;
+
+--
+-- Dumping data for table `issuers`
+--
+
+
+/*!40000 ALTER TABLE `issuers` DISABLE KEYS */;
+LOCK TABLES `issuers` WRITE;
+INSERT INTO `issuers` VALUES (1,'Provider 1'),(2,'Provider 2'),(3,'Provider 3'),(4,'Provider 4'),(5,'Provider 5');
+UNLOCK TABLES;
+/*!40000 ALTER TABLE `issuers` ENABLE KEYS */;
+
+--
+-- Table structure for table `products`
+--
+
+DROP TABLE IF EXISTS `products`;
+CREATE TABLE `products` (
+  `id` int(11) NOT NULL auto_increment,
+  `name` varchar(50) NOT NULL default '',
+  `price` int(11) NOT NULL default '0',
+  `issuer_id` int(11) NOT NULL default '0',
+  PRIMARY KEY  (`id`),
+  KEY `issuers` (`issuer_id`)
+) TYPE=MyISAM;
+
+--
+-- Dumping data for table `products`
+--
+
+
+/*!40000 ALTER TABLE `products` DISABLE KEYS */;
+LOCK TABLES `products` WRITE;
+INSERT INTO `products` VALUES (1,'provider_1_1',75000,2),(2,'provider_1_2',128000,2),(3,'provider_1_3',180000,2),(4,'provider_3_1',50000,3),(5,'provider_3_2',100000,3),(6,'provider_3_3',200000,3),(7,'provider_2_1',30000,1),(8,'provider_2_2',50000,1),(9,'provider_2_3',100000,1);
+UNLOCK TABLES;
+/*!40000 ALTER TABLE `products` ENABLE KEYS */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
