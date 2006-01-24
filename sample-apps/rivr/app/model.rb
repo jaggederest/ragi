@@ -98,12 +98,11 @@ class BizModel
   # API format for clickatell
   #
   # http://api.clickatell.com/http/sendmsg?api_id=xxxx&user=xxxx&password=xxxx&to=xxxx&text=xxxx 
-  # http://api.clickatell.com/http/sendmsg?api_id=1278630&user=wgsohne&password=dimwit1&to=+233244016467&text=Hello
   
   def notifyViaSMS(number, message, api, user, password)
     result = nil
     message = CGI.escape message
-    request = "/http/sendmsg?api_id=#{api}&user=#{user}&password=#{password}&to=#{number}&text=#{message}&from=CoreNett"     
+    request = "/http/sendmsg?api_id=#{api}&user=#{user}&password=#{password}&to=#{number}&text=#{message}&from=RIVR"     
     Net::HTTP.start( 'api.clickatell.com', 80 ) { |http| result = http.get(request).body }    
     return result    
   end 
