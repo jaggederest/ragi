@@ -85,7 +85,7 @@ end
 
 require 'ragi/call_server'
 
-RAGI::CallServer.new(:ServerType => SimpleThreadServer )
+RAGI::CallServer.new(:ServerType => SimpleThreadServer )
 
 
 5. Edit your Asterisk extensions.conf to send call control to your RAGI process.  
