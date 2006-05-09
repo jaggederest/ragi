@@ -36,6 +36,7 @@
 
 require 'cgi'
 require 'yaml'
+require 'fileutils'
 
 module RAGI
   class UsageError < StandardError; end
@@ -81,22 +82,23 @@ module RAGI
       options[:agi_server] ||= RAGI::globalConfig["agiServer"]
 
       RAGI::CallInitiate.place_call(phone_number, 
-                                   options[:caller_id],
-                                   urn,
-                                   options[:hash_params],
-                                   options[:call_date], 
-                                   options[:unique_id],
-                                   options[:max_retries],
-                                   options[:retry_time],
-                                   options[:wait_time],
-                                   options[:set_vars])
+                                    options[:caller_id],
+                                    urn,
+                                    options[:hash_params],
+                                    options[:call_date], 
+                                    options[:unique_id],
+                                    options[:max_retries],
+                                    options[:retry_time],
+                                    options[:wait_time],
+                                    options[:set_vars],
+                                    options[:agi_server])
     end
   end
 
   class CallInitiate
 
     # This function is called by RAGI.place_call to actually do the work.
-	def self.place_call(phoneNumber, callerID, urn, hashData, callDate, uniqueID, maxRetries, retryTime, waitTime, extraChannelVars)
+	def self.place_call(phoneNumber, callerID, urn, hashData, callDate, uniqueID, maxRetries, retryTime, waitTime, extraChannelVars, agiServer)
       
       placeCallNow = false
       if (callDate == nil)
@@ -108,7 +110,6 @@ module RAGI
         raise ApplicationError, "Relative URNs cannot be used (found #{urn})"
       end
       
-      agiServer = RAGI::globalConfig["agiServer"]
       RAGI.LOGGER.debug("Initiating call with agi server: #{agiServer}")
       
       fileName = getfilename(phoneNumber, callDate, uniqueID)

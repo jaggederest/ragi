@@ -79,39 +79,43 @@ module RAGI
       @running = true
 
       if (@incomingcallsocket == nil)
-        begin
-          # code to executed in a thread
-          RAGI.LOGGER.info("#{self.class.name}: default-handler=#{@config[:DefaultHandler].to_s} port=#{@config[:Port]}")
-          @incomingcallsocket = WEBrick::GenericServer.new( @config )  
+        RAGI.LOGGER.info("#{self.class.name}: default-handler=#{@config[:DefaultHandler].to_s} port=#{@config[:Port]}")
+        @incomingcallsocket = WEBrick::GenericServer.new( @config )  
           
-          @incomingcallsocket.start{ |sock|
-            cc = CallConnection.new(sock)
+        begin
+          @incomingcallsocket.start do |sock|
+            # code to executed in a thread
+            begin
+              cc = CallConnection.new(sock)
             
-            route = {
-              :handler => @config[:DefaultHandler],
-              :action => :dialup
-            }
+              route = {
+                :handler => @config[:DefaultHandler],
+                :action => :dialup
+              }
             
-            # the default call handler comes from config environment.rb
+              # the default call handler comes from config environment.rb
             
-            if (cc.agi_url != nil && cc.agi_url != '/')  
-              route = CallHandler.route(cc.agi_url)
-            end
-            RAGI.LOGGER.info("#{self.class.name}: processing call with #{route[:handler].to_s}")
-            
-            CallHandler.process(route, cc)
+              if (cc.agi_url != nil && cc.agi_url != '/')  
+                route = CallHandler.route(cc.agi_url)
+              end
+              RAGI.LOGGER.info("#{self.class.name}: processing call with #{route[:handler].to_s}")
+              
+              CallHandler.process(route, cc)
 
-            # todo: Catch exceptions and say something to the user
-            # before we disconnect them.  Something like this maybe:
-            #
-            # rescue StandardError => err
-            #  if (cc) then
-            #   cc.play_sound('tc/std/sorry-error')
-            #   cc.hang_up()
-            #  end
-            #  raise
-            # end
-          }
+              # todo: Catch exceptions and say something to the user
+              # before we disconnect them.  Something like this maybe:
+              #
+              # rescue StandardError => err
+              #  if (cc) then
+              #   cc.play_sound('tc/std/sorry-error')
+              #   cc.hang_up()
+              #  end
+              #  raise
+              # end
+            ensure
+              cc.close if cc
+            end
+          end
           RAGI.LOGGER.info("#{self.class.name}: server shutdown port=#{@config[:Port]}")
           
         rescue StandardError => err

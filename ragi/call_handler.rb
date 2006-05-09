@@ -113,16 +113,15 @@ module RAGI
   #  
   # == Sessions
   #
-  # A session object is created for each RAGI connection. The session object 
-  # is simply a has object that allows you to store objects in memory during 
-  # the call. Unlike the web, session objects are not maintained across 
-  # connection. You can place objects in the functions using the hash object:
+  # A session object is created for each RAGI connection.  This session can
+  # be used to share data across multiple calls or between the RAGI server
+  # and a web server.
   #
-  #     @session[:foo] = :bar
+  #     self.session[:foo] = :bar
   #
-  # Later you can retrieve the contents using the hash object:
+  # Later you can retrieve the contents, for example:
   #
-  #     if(@session[:foo] == :bar) then
+  #     if(self.session[:foo] == :bar) then
   #
   # == Redirection
   #
@@ -143,7 +142,14 @@ module RAGI
   # also reference an explicit class or a class instance.
   
   class CallHandler
-    attr_accessor :connection, :session, :redirect_route
+    #-----------------------------------------------------------------------------
+    # Accessors
+    #-----------------------------------------------------------------------------
+    attr_accessor :connection, :redirect_route
+
+    def session
+      @connection ? @connection.session : nil
+    end
 
     #-----------------------------------------------------------------------------
     # PUBLIC INSTANCE METHODS
@@ -167,7 +173,7 @@ module RAGI
         RAGI::LOGGER.warn("Warning, creating new instance of handler #{route[:handler]}.")
       end
 
-      CallHandler.process(route, @connection, self.session)
+      CallHandler.process(route, @connection)
     end
 
     #-----------------------------------------------------------------------------
@@ -188,7 +194,7 @@ module RAGI
           class_name = file_name.camelize
           
           begin
-            require_dependency("helpers/#{file_name}")
+            require_dependency(file_name)
           rescue LoadError => load_error
             requiree = / -- (.*?)(\.rb)?$/.match(load_error).to_a[1]
             msg = (requiree == file_name) ? "Missing helper file helpers/#{file_name}.rb" : "Can't load file: #{requiree}"
@@ -227,10 +233,10 @@ module RAGI
     end
     
     # Based on the specified route, load and initialize a handler. we then 
-    # call the appropriate action based on the route. if the handler species 
+    # call the appropriate action based on the route. if the handler specifies 
     # that we should redirect, then do that.
 
-    def self.process(route, connection, session = {})
+    def self.process(route, connection)
       handler = nil
 
       while route do
@@ -246,16 +252,13 @@ module RAGI
 
           case route[:handler]
           when Class
-            puts "running ragi class"
             handler = route[:handler].new
           when String, Symbol
-            puts "running ragi string lookup"
             file_name  = route[:handler].to_s.underscore + '_handler'
-            puts "filename: #{file_name}"
             class_name = file_name.camelize
           
             begin
-              require_dependency("handlers/#{file_name}")
+              require_dependency(file_name)
             rescue LoadError => load_error
               requiree = / -- (.*?)(\.rb)?$/.match(load_error).to_a[1]
               msg = (requiree == file_name) ? "Missing handler file handlers/#{file_name}.rb" : "Can't load file: #{requiree}"
@@ -267,7 +270,7 @@ module RAGI
             # todo: test support for passing handler as an instance
             handler = route[:handler]
           end
-          handler.init_session(route, connection, session)
+          handler.init_session(route, connection)
         end
 
         handler.send(route[:action])
@@ -299,10 +302,9 @@ module RAGI
     # as it gets constructed. This method should never be called from outside 
     # the framework.
 
-    def init_session(route, connection, session = {} )
+    def init_session(route, connection)
       @route = route
       @connection = connection
-      @session = session
       @redirect_route = nil
       @call_status = connection.get_call_status
 

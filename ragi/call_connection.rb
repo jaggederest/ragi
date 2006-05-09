@@ -30,6 +30,7 @@
 
 require 'ragi/call_server'
 require 'ragi/call_initiate'
+require 'ragi/session'
 require 'cgi'
 
 #
@@ -64,7 +65,8 @@ module RAGI
 
 	@socket = nil
     @params = {}
-	
+	@ragi_session = nil
+
 	# Many of the command here correspond roughly to Asterisk AGI in their
     # naming and parameterization.  However, we have designed these to be familiar
     # to Ruby developers.
@@ -254,11 +256,11 @@ module RAGI
 
     # Calls swift.agi to speak some text.  Sorry, this expects the Cepstral engine.
 	def speak_text(texttospeak)
-		fixedmessage = texttospeak
-		fixedmessage = fixedmessage.gsub("\r", " ")
-		fixedmessage = fixedmessage.gsub("\n", " ")
-		fixedmessage = fixedmessage.strip
-		exec("AGI", "swift.agi|\"" + fixedmessage + "\"")
+      fixedmessage = texttospeak
+      fixedmessage = fixedmessage.gsub("\r", " ")
+      fixedmessage = fixedmessage.gsub("\n", " ")
+      fixedmessage = fixedmessage.strip
+      exec("AGI", "speak_text.agi|\"" + fixedmessage + "\"")
 	end	
 
 	#
@@ -272,7 +274,7 @@ module RAGI
 			beepstr = " BEEP "
 		end
 		
-		cmd = "RECORD FILE " + filename + " gsm " + " \"*#\" " + (maxtimeinseconds * 10000).to_s + beepstr + " s=" + silencedetect.to_s
+		cmd = "RECORD FILE " + filename + " gsm " + " \"*#\" " + (maxtimeinseconds * 1000).to_s + beepstr + " s=" + silencedetect.to_s
 		send(cmd)
 		return get_result()
 	end
@@ -290,9 +292,9 @@ module RAGI
 
     # Says the number, e.g. "123" is "one hundred twenty three"
 	def say_number(number, escapeDigits=ALL_SPECIAL_DIGITS)
-		msg="SAY NUMBER #{digits} #{escape_digit_string(escapeDigits)}"
-		send(msg)
-		return get_int_result()
+      msg="SAY NUMBER #{number} #{escape_digit_string(escapeDigits)}"
+      send(msg)
+      return get_int_result()
 	end
 	
 	#Pass in a Ruby Time object
@@ -365,6 +367,18 @@ module RAGI
       return CallInitiate.decode_call_params(get_variable("CallInitiate_hashdata"))
 	end
 
+    def session
+      # Load the session the first time we need it
+      if !@ragi_session
+        hash = get_hash_data
+        @ragi_session ||= RAGI::Session.new(hash ? hash["session"] : nil)
+      end
+      @ragi_session
+    end
+
+    def close
+      @ragi_session.close if @ragi_session
+    end
 
 	#----------------HELPERS-----------------
     private

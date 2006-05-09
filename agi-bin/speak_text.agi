@@ -1,0 +1,33 @@
+#!/bin/sh
+text=`echo $*`
+stdin="0"
+while [ "$stdin" != "" ]
+ do
+   read stdin
+    if [ "$stdin" != "" ]
+     then
+      stdin2=`echo $stdin | sed -e 's/: /=/' -e 's/"//g' -e 's/$/"/' -e 's/=/="/'`
+      eval `echo $stdin2`
+     fi
+ done
+
+calleridnum=`echo $agi_callerid | cut -f2 -d\< | cut -f1 -d\>`
+calleridname=`echo $agi_callerid | cut -f1 -d\< `
+
+# Uncomment for Cepstral
+/usr/local/bin/swift -o /tmp/$agi_uniqueid.wav -p audio/channels=1,audio/sampling-rate=8000 " $text "
+
+# Uncomment for Mac OS X say
+#say -o /tmp/$agi_uniqueid.aiff " $text "
+#sox /tmp/$agi_uniqueid.aiff -c 1 -r 8000 /tmp/$agi_uniqueid.wav
+
+# Uncomment for Festival
+#echo " $text " | text2wave -scale 1.5 -F 8000 -o /tmp/$agi_uniqueid.wav
+
+echo "stream file /tmp/$agi_uniqueid #"
+
+read stream
+
+#rm /tmp/$agi_uniqueid.wav
+
+exit 0
