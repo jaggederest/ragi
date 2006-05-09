@@ -43,7 +43,9 @@ exten => 102,3,Hangup
 3. To support the Simon Game sample, copy the sound files into your Asterisk
 server's default sound directory.
 
-4. The file "start_ragi.rb" is an example of running RAGI with the Simon Game
+4. To support text to speech via the speak_text command, copy the contents of agi-bin to your agi-bin directory. You should also open that file and customize it following the instructions for your TTS engine.
+
+5. The file "start_ragi.rb" is an example of running RAGI with the Simon Game
 call handler.  To run, type the following from the command prompt:
 
 ruby ragi\start_ragi.rb
@@ -107,6 +109,11 @@ and config your extensions.conf to route them as needed.
 
 6. To support the Simon Game sample, copy the sound files into your Asterisk
 server's default sound directory.
+
+7. To support text to speech via the speak_text command, copy the contents of agi-bin to your agi-bin directory. You should also open that file and customize it following the instructions for your TTS engine.
+
+8. The file "start_ragi.rb" is an example of running RAGI with the Simon Game
+call handler.  To run, type the following from the command prompt:
 
 7. Start up your Rails app and your Asterisk server.
 
