@@ -91,7 +91,7 @@ module RAGI
     
     def self.phone(phone_number)
       if @@workspaces.find {|w| w.main.to_s == phone_number} == nil
-        RAGI::CallInitiate.place_call(phone_number.to_s, "12345678901", "/", { :phone_number => phone_number.to_s}, nil, "1", nil, nil, nil, nil)
+        RAGI::CallInitiate.place_call(phone_number.to_s, "12345678901", "/", { :phone_number => phone_number.to_s}, nil, "1", nil, nil, nil, nil, "localhost")
       else
         puts "There is already a context open for #{phone_number}!\n"
       end
